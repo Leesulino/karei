@@ -31,9 +31,10 @@ class _ResultScreenState extends State<ResultScreen> {
       isLoading = false;
       candleCount--;
       showNoro = (candleCount == 1); // 촛불 1개 남았을 때 노로 발동
-      dialogue = candleCount == 2
-          ? "이건 그냥 낡은 터널이에요."
-          : candleCount == 1
+      dialogue =
+          candleCount == 2
+              ? "이건 그냥 낡은 터널이에요."
+              : candleCount == 1
               ? "……뭔가 느껴졌어요. 여긴 위험할지도."
               : "더 이상 감정할 수 없어요. 광고를 보세요.";
       setunaExpression = 1 + (3 - candleCount);
@@ -50,9 +51,21 @@ class _ResultScreenState extends State<ResultScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset('assets/2.png', fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+          Image.asset(
+            'assets/2.png',
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
           if (widget.imagePath != null)
-            Center(child: Image.asset(widget.imagePath!, fit: BoxFit.cover, width: 200, height: 200)),
+            Center(
+              child: Image.asset(
+                widget.imagePath!,
+                fit: BoxFit.cover,
+                width: 200,
+                height: 200,
+              ),
+            ),
 
           // 확대경 (이미지 선택 전용)
           Positioned(
@@ -73,19 +86,14 @@ class _ResultScreenState extends State<ResultScreen> {
               child: Center(
                 child: GestureDetector(
                   onTap: _startLoadingAndEmotion,
-                  child: Image.asset(
-                    'assets/kansei.png',
-                    width: 120,
-                  ),
+                  child: Image.asset('assets/kansei.png', width: 120),
                 ),
               ),
             ),
 
           // 로딩 중
           if (isLoading)
-            Center(
-              child: Image.asset('assets/loading.png', width: 150),
-            ),
+            Center(child: Image.asset('assets/loading.png', width: 150)),
 
           // 세츠나 캐릭터 + 대사창
           Positioned(
@@ -103,10 +111,8 @@ class _ResultScreenState extends State<ResultScreen> {
           Positioned(
             top: 40,
             right: 20,
-            child: CandleWidget(count: candleCount),
-          ),
-
-          // 노로 발동 시
+            child: CandleWidget(remaining: candleCount, total: 3),
+          ), // ← 이 괄호가 누락되어 있었음!
           if (showNoro)
             Positioned.fill(
               child: Opacity(
