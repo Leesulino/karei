@@ -19,12 +19,21 @@ class _KaireidoScopeAppState extends State<KaireidoScopeApp> {
   @override
   void initState() {
     super.initState();
-    _startBGM();
+
+    // ✅ PostFrameCallback으로 BGM 로딩 안정화
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startBGM();
+    });
   }
 
   Future<void> _startBGM() async {
-    await _player.setReleaseMode(ReleaseMode.loop);
-    await _player.play(AssetSource('back.mp3'));
+    try {
+      await _player.setReleaseMode(ReleaseMode.loop);
+      await _player.play(AssetSource('back.mp3'));
+      print("🎵 BGM 재생 요청 성공");
+    } catch (e) {
+      print("❌ BGM 재생 실패: $e");
+    }
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'candle_widget.dart';
-import 'dialogue_box.dart';
-import 'custom_button.dart';
+import 'waku_screen.dart';
 
 class ResultScreen extends StatefulWidget {
   final String? imagePath;
@@ -58,19 +57,6 @@ class _ResultScreenState extends State<ResultScreen> {
     print("이미지 선택 triggered (추후 구현)");
   }
 
-  Alignment _getExpressionAlignment(int index) {
-    switch (index) {
-      case 1:
-        return Alignment.topRight; // 걱정
-      case 2:
-        return Alignment.bottomLeft; // 슬픔
-      case 3:
-        return Alignment.bottomRight; // 절망
-      default:
-        return Alignment.topLeft; // 미소
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,70 +67,19 @@ class _ResultScreenState extends State<ResultScreen> {
             child: Image.asset('assets/2.png', fit: BoxFit.cover),
           ),
 
-          // waku UI 영역
+          // waku 화면
           Center(
-            child: Stack(
-              children: [
-                Image.asset('assets/waku.png', width: 400),
-
-                // 세츠나 표정
-                Positioned(
-                  bottom: 80,
-                  left: 30,
-                  child:
-                      candleCount == 3
-                          ? Image.asset('assets/setuna.png', width: 100)
-                          : ClipRect(
-                            child: Align(
-                              alignment: _getExpressionAlignment(
-                                setunaExpression,
-                              ),
-                              widthFactor: 100 / 200,
-                              heightFactor: 150 / 300,
-                              child: Image.asset(
-                                'assets/setuna_var.png',
-                                width: 200,
-                                height: 300,
-                              ),
-                            ),
-                          ),
-                ),
-
-                // 대사창
-                Positioned(
-                  bottom: 10,
-                  left: 0,
-                  right: 0,
-                  child: DialogueBox(text: dialogue),
-                ),
-
-                // 감정 버튼 (촛불 남아있을 때만)
-                if (!isLoading && candleCount > 0)
-                  Positioned(
-                    bottom: 10,
-                    right: 20,
-                    child: GestureDetector(
-                      onTap: _startLoadingAndEmotion,
-                      child: Image.asset('assets/kansei.png', width: 80),
-                    ),
-                  ),
-
-                // 리트라이 버튼
-                if (candleCount == 0 && !isLoading)
-                  Positioned(
-                    bottom: 10,
-                    right: 20,
-                    child: GlowingButton(
-                      imagePath: 'assets/retry.png',
-                      width: 120,
-                      onTap: _retrySession,
-                    ),
-                  ),
-              ],
+            child: WakuScreen(
+              candleCount: candleCount,
+              dialogue: dialogue,
+              setunaExpression: setunaExpression,
+              isLoading: isLoading,
+              onEmotionTap: _startLoadingAndEmotion,
+              onRetryTap: _retrySession,
             ),
           ),
 
-          // 확대경 버튼
+          // 확대경 버튼 (임시용)
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: MediaQuery.of(context).size.width * 0.25,
