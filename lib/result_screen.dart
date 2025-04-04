@@ -41,10 +41,9 @@ class _ResultScreenState extends State<ResultScreen> {
       isLoading = false;
       candleCount--;
       showNoro = (candleCount == 1);
-      dialogue =
-          candleCount == 2
-              ? "これはただの古いトンネルですね。"
-              : candleCount == 1
+      dialogue = candleCount == 2
+          ? "これはただの古いトンネルですね。"
+          : candleCount == 1
               ? "……何か感じました。ここは危ないかも。"
               : "これ以上鑑定できません。広告をご覧ください。";
       setunaExpression = 3 - candleCount;
@@ -53,7 +52,14 @@ class _ResultScreenState extends State<ResultScreen> {
 
   void _pickImage() {
     print("이미지 선택 triggered (추후 구현)");
-    // selectedImage = ...
+  }
+
+  void _dismissNoro() {
+    setState(() {
+      showNoro = false;
+      dialogue = "……いまは大丈夫です。さっきの気配はもう消えました。";
+      setunaExpression = 3;
+    });
   }
 
   @override
@@ -69,6 +75,7 @@ class _ResultScreenState extends State<ResultScreen> {
         onEmotionTap: _startLoadingAndEmotion,
         onRetryTap: _retrySession,
         onPickImage: _pickImage,
+        onDismissNoro: _dismissNoro, // 콜백 전달
       ),
     );
   }
