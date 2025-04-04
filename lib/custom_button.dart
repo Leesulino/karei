@@ -5,6 +5,7 @@ class GlowingButton extends StatefulWidget {
   final VoidCallback onTap;
   final double width;
   final double height;
+  final Duration duration; // ✅ 추가
 
   const GlowingButton({
     Key? key,
@@ -12,6 +13,7 @@ class GlowingButton extends StatefulWidget {
     required this.onTap,
     this.width = 200,
     this.height = 80,
+    this.duration = const Duration(milliseconds: 100), // ✅ 기본값
   }) : super(key: key);
 
   @override
@@ -31,7 +33,7 @@ class _GlowingButtonState extends State<GlowingButton> {
       },
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
+        duration: widget.duration, // ✅ 외부에서 조절 가능
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
