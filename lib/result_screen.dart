@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'candle_widget.dart';
 import 'dialogue_box.dart';
-import 'custom_button.dart'; // GlowingButton 위젯 사용
+import 'custom_button.dart';
 
 class ResultScreen extends StatefulWidget {
   final String? imagePath;
@@ -16,12 +16,13 @@ class _ResultScreenState extends State<ResultScreen> {
   bool isLoading = false;
   bool showNoro = false;
   int candleCount = 3;
-  String dialogue = "세츠나입니다. 감정을 시작해주세요.";
+  String dialogue = "セツナです。鑑定を始めてください。";
   int setunaExpression = 0;
+
   void _retrySession() {
     setState(() {
       candleCount = 3;
-      dialogue = "세츠나입니다. 감정을 시작해주세요.";
+      dialogue = "セツナです。鑑定を始めてください。";
       isLoading = false;
       showNoro = false;
       setunaExpression = 0;
@@ -32,28 +33,42 @@ class _ResultScreenState extends State<ResultScreen> {
     setState(() {
       isLoading = true;
       showNoro = false;
-      dialogue = "감정 중...";
+      dialogue = "鑑定中……";
     });
 
-    await Future.delayed(Duration(seconds: 3)); // 로딩 시뮬레이션
+    await Future.delayed(Duration(seconds: 3));
 
     setState(() {
       isLoading = false;
       candleCount--;
       showNoro = (candleCount == 1);
+
       dialogue =
           candleCount == 2
-              ? "이건 그냥 낡은 터널이에요."
+              ? "これはただの古いトンネルですね。"
               : candleCount == 1
-              ? "……뭔가 느껴졌어요. 여긴 위험할지도."
-              : "더 이상 감정할 수 없어요. 광고를 보세요.";
-      setunaExpression = 1 + (3 - candleCount);
+              ? "……何か感じました。ここは危ないかも。"
+              : "これ以上鑑定できません。広告をご覧ください。";
+
+      setunaExpression = 3 - candleCount;
     });
   }
 
   void _pickImage() {
-    // 이미지 선택 기능은 플랫폼별 구현 필요
     print("이미지 선택 triggered (추후 구현)");
+  }
+
+  Alignment _getExpressionAlignment(int index) {
+    switch (index) {
+      case 1:
+        return Alignment.topRight; // 걱정
+      case 2:
+        return Alignment.bottomLeft; // 슬픔
+      case 3:
+        return Alignment.bottomRight; // 절망
+      default:
+        return Alignment.topLeft; // 미소
+    }
   }
 
   @override
@@ -61,27 +76,85 @@ class _ResultScreenState extends State<ResultScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // 🎨 배경 이미지 (가장 아래)
+          // 배경
           Positioned.fill(
             child: Image.asset('assets/2.png', fit: BoxFit.cover),
           ),
 
-          // 🔁 촛불 다 꺼졌을 때 리트라이 버튼 추가
-          if (candleCount == 0 && !isLoading)
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: GlowingButton(
-                  imagePath: 'assets/retry.png',
-                  width: 180,
-                  onTap: _retrySession,
-                ),
-              ),
-            ),
+          // waku UI 영역
+          Center(
+            child: Stack(
+              children: [
+                Image.asset('assets/waku.png', width: 400),
 
-          // 🖼️ 선택된 이미지 (임시)
+                // 세츠나 표정
+                Positioned(
+                  bottom: 80,
+                  left: 30,
+                  child:
+                      candleCount == 3
+                          ? Image.asset('assets/setuna.png', width: 100)
+                          : ClipRect(
+                            child: Align(
+                              alignment: _getExpressionAlignment(
+                                setunaExpression,
+                              ),
+                              widthFactor: 100 / 200,
+                              heightFactor: 150 / 300,
+                              child: Image.asset(
+                                'assets/setuna_var.png',
+                                width: 200,
+                                height: 300,
+                              ),
+                            ),
+                          ),
+                ),
+
+                // 대사창
+                Positioned(
+                  bottom: 10,
+                  left: 0,
+                  right: 0,
+                  child: DialogueBox(text: dialogue),
+                ),
+
+                // 감정 버튼 (촛불 남아있을 때만)
+                if (!isLoading && candleCount > 0)
+                  Positioned(
+                    bottom: 10,
+                    right: 20,
+                    child: GestureDetector(
+                      onTap: _startLoadingAndEmotion,
+                      child: Image.asset('assets/kansei.png', width: 80),
+                    ),
+                  ),
+
+                // 리트라이 버튼
+                if (candleCount == 0 && !isLoading)
+                  Positioned(
+                    bottom: 10,
+                    right: 20,
+                    child: GlowingButton(
+                      imagePath: 'assets/retry.png',
+                      width: 120,
+                      onTap: _retrySession,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // 확대경 버튼
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.25,
+            left: MediaQuery.of(context).size.width * 0.25,
+            child: GestureDetector(
+              onTap: _pickImage,
+              child: Image.asset('assets/candlescope.png', width: 150),
+            ),
+          ),
+
+          // 선택된 이미지 (임시)
           if (widget.imagePath != null)
             Center(
               child: Image.asset(
@@ -92,70 +165,18 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
             ),
 
-          // 🔍 확대경 버튼
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.25,
-            left: MediaQuery.of(context).size.width * 0.25,
-            child: GestureDetector(
-              onTap: _pickImage,
-              child: Image.asset('assets/candlescope.png', width: 150),
-            ),
-          ),
-
-          // 🔮 감정 버튼
-          if (!isLoading && candleCount > 0)
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: GestureDetector(
-                  onTap: _startLoadingAndEmotion,
-                  child: Image.asset('assets/kansei.png', width: 120),
-                ),
-              ),
-            ),
-          // 🔁 리트라이 버튼 (감정 다 했을 때)
-          if (candleCount == 0 && !isLoading)
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: GlowingButton(
-                  imagePath: 'assets/retry.png',
-                  width: 180,
-                  onTap: _retrySession,
-                ),
-              ),
-            ),
-
-          // ⏳ 로딩 이미지
-          if (isLoading)
-            Center(child: Image.asset('assets/loading.png', width: 150)),
-
-          // 🧍‍♀️ 세츠나 캐릭터
-          Positioned(
-            bottom: 120,
-            left: 20,
-            child: Image.asset(
-              'assets/setuna_var.png',
-              width: 100,
-              height: 100,
-            ),
-          ),
-
-          // 💬 대사창
-          DialogueBox(text: dialogue),
-
-          // 🕯️ 촛불 위젯 (하나만 남기기)
+          // 촛불
           Positioned(
             top: 40,
             right: 20,
             child: CandleWidget(remaining: candleCount, total: 3),
           ),
 
-          // 🩸 노로 효과 (한 번만)
+          // 로딩
+          if (isLoading)
+            Center(child: Image.asset('assets/loading.png', width: 150)),
+
+          // 노로 효과
           if (showNoro)
             Positioned.fill(
               child: Opacity(
