@@ -36,25 +36,29 @@ class _GlowingButtonState extends State<GlowingButton> {
         duration: widget.duration,
         width: widget.width,
         height: widget.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(widget.imagePath),
-            fit: BoxFit.contain,
-            colorFilter:
-                _isPressed
-                    ? const ColorFilter.mode(Colors.white, BlendMode.screen)
-                    : null,
-          ),
-          boxShadow:
-              _isPressed
-                  ? [
+        child: Stack(
+          children: [
+            Image.asset(
+              widget.imagePath,
+              fit: BoxFit.contain,
+              width: widget.width,
+              height: widget.height,
+              color: _isPressed ? Colors.white.withOpacity(0.7) : null,
+              colorBlendMode: BlendMode.screen,
+            ),
+            if (_isPressed)
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
                     BoxShadow(
                       color: Colors.amber.withOpacity(0.8),
                       blurRadius: 12,
                       spreadRadius: 2,
                     ),
-                  ]
-                  : [],
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );

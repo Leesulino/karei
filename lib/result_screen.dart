@@ -20,8 +20,8 @@ class _ResultScreenState extends State<ResultScreen> {
 
   void _retrySession() {
     setState(() {
-      candleCount = 3;
-      dialogue = "セツナです。鑑定を始めてください。";
+      candleCount = 1; // 광고 보고 한 개 회복
+      dialogue = "もう一度鑑定してみましょう。";
       isLoading = false;
       showNoro = false;
       setunaExpression = 0;
@@ -29,6 +29,8 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   void _startLoadingAndEmotion() async {
+    if (candleCount <= 0) return;
+
     setState(() {
       isLoading = true;
       showNoro = false;
@@ -41,9 +43,10 @@ class _ResultScreenState extends State<ResultScreen> {
       isLoading = false;
       candleCount--;
       showNoro = (candleCount == 1);
-      dialogue = candleCount == 2
-          ? "これはただの古いトンネルですね。"
-          : candleCount == 1
+      dialogue =
+          candleCount == 2
+              ? "これはただの古いトンネルですね。"
+              : candleCount == 1
               ? "……何か感じました。ここは危ないかも。"
               : "これ以上鑑定できません。広告をご覧ください。";
       setunaExpression = 3 - candleCount;
@@ -51,7 +54,7 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   void _pickImage() {
-    print("이미지 선택 triggered (추후 구현)");
+    print("이미지 선택 기능은 아직 구현되지 않았습니다.");
   }
 
   void _dismissNoro() {
@@ -75,7 +78,7 @@ class _ResultScreenState extends State<ResultScreen> {
         onEmotionTap: _startLoadingAndEmotion,
         onRetryTap: _retrySession,
         onPickImage: _pickImage,
-        onDismissNoro: _dismissNoro, // 콜백 전달
+        onDismissNoro: _dismissNoro,
       ),
     );
   }
