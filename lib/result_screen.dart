@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'waku_screen.dart';
@@ -22,25 +23,38 @@ class _ResultScreenState extends State<ResultScreen> {
   String caption = '';
   final TextEditingController _captionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-
   RewardedAd? _rewardedAd;
 
   @override
   void initState() {
     super.initState();
     _loadRewardedAd();
+    _checkCandleReset();
+  }
+
+  Future<void> _checkCandleReset() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastTime = prefs.getInt('lastEmotionTime') ?? 0;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - lastTime > 86400000) { // 24시간 = 86400000ms
+      setState(() {
+        candleCount = 3;
+      });
+    }
+  }
+
+  void _saveLastEmotionTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('lastEmotionTime', DateTime.now().millisecondsSinceEpoch);
   }
 
   void _loadRewardedAd() {
     RewardedAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/5224354917', // 테스트용
+      adUnitId: 'ca-app-pub-3940256099942544/5224354917',
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) => setState(() => _rewardedAd = ad),
-        onAdFailedToLoad: (error) {
-          debugPrint('Failed to load rewarded ad: $error');
-          _rewardedAd = null;
-        },
+        onAdFailedToLoad: (error) => _rewardedAd = null,
       ),
     );
   }
@@ -55,11 +69,9 @@ class _ResultScreenState extends State<ResultScreen> {
             showNoro = false;
           });
           _rewardedAd = null;
-          _loadRewardedAd(); // 다음 광고 미리 로딩
+          _loadRewardedAd();
         },
       );
-    } else {
-      debugPrint('No rewarded ad available');
     }
   }
 
@@ -86,7 +98,7 @@ class _ResultScreenState extends State<ResultScreen> {
     });
 
     try {
-      final uri = Uri.parse('http://YOUR_BACKEND_ADDRESS/predict'); // 🔁 수정 필요
+      final uri = Uri.parse('http://YOUR_BACKEND_ADDRESS/predict');
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
@@ -105,11 +117,17 @@ class _ResultScreenState extends State<ResultScreen> {
           isLoading = false;
           setunaExpression = mappedExpression;
           dialogue = data['message'] ?? '…';
-          candleCount = (candleCount - 1).clamp(0, 3);
           showNoro = shouldShowNoro;
         });
+
+        // 감정 끝난 뒤 촛불 감소
+        setState(() {
+          candleCount = (candleCount - 1).clamp(0, 3);
+        });
+
+        _saveLastEmotionTime();
       } else {
-        throw Exception('API 호출 실패');
+        throw Exception('API 실패');
       }
     } catch (e) {
       setState(() {
@@ -180,7 +198,7 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: _analyzeCaption,
+                  onPressed: candleCount > 0 ? _analyzeCaption : null,
                   child: const Text('鑑定する'),
                 ),
               ],
