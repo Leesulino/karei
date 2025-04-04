@@ -28,4 +28,6 @@ flutter:
     - assets/setuna_var.png
     - assets/waku.png
     - assets/kansei.png
+    - assets/start.png
+    - assets/retry.png
     - assets/back.mp3

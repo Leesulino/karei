@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'candle_widget.dart';
 import 'dialogue_box.dart';
+import 'custom_button.dart'; // GlowingButton 위젯 사용
 
 class ResultScreen extends StatefulWidget {
   final String? imagePath;
@@ -17,6 +18,15 @@ class _ResultScreenState extends State<ResultScreen> {
   int candleCount = 3;
   String dialogue = "세츠나입니다. 감정을 시작해주세요.";
   int setunaExpression = 0;
+  void _retrySession() {
+    setState(() {
+      candleCount = 3;
+      dialogue = "세츠나입니다. 감정을 시작해주세요.";
+      isLoading = false;
+      showNoro = false;
+      setunaExpression = 0;
+    });
+  }
 
   void _startLoadingAndEmotion() async {
     setState(() {
@@ -30,7 +40,7 @@ class _ResultScreenState extends State<ResultScreen> {
     setState(() {
       isLoading = false;
       candleCount--;
-      showNoro = (candleCount == 1); // 촛불 1개 남았을 때 노로 발동
+      showNoro = (candleCount == 1);
       dialogue =
           candleCount == 2
               ? "이건 그냥 낡은 터널이에요."
@@ -42,7 +52,7 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   void _pickImage() {
-    // 이미지 피커 호출용, 실제 구현은 Flutter 웹/모바일마다 다름
+    // 이미지 선택 기능은 플랫폼별 구현 필요
     print("이미지 선택 triggered (추후 구현)");
   }
 
@@ -51,12 +61,27 @@ class _ResultScreenState extends State<ResultScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(
-            'assets/2.png',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+          // 🎨 배경 이미지 (가장 아래)
+          Positioned.fill(
+            child: Image.asset('assets/2.png', fit: BoxFit.cover),
           ),
+
+          // 🔁 촛불 다 꺼졌을 때 리트라이 버튼 추가
+          if (candleCount == 0 && !isLoading)
+            Positioned(
+              bottom: 50,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GlowingButton(
+                  imagePath: 'assets/retry.png',
+                  width: 180,
+                  onTap: _retrySession,
+                ),
+              ),
+            ),
+
+          // 🖼️ 선택된 이미지 (임시)
           if (widget.imagePath != null)
             Center(
               child: Image.asset(
@@ -67,7 +92,7 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
             ),
 
-          // 확대경 (이미지 선택 전용)
+          // 🔍 확대경 버튼
           Positioned(
             top: MediaQuery.of(context).size.height * 0.25,
             left: MediaQuery.of(context).size.width * 0.25,
@@ -77,7 +102,7 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
           ),
 
-          // 감정 시작 버튼
+          // 🔮 감정 버튼
           if (!isLoading && candleCount > 0)
             Positioned(
               bottom: 50,
@@ -90,12 +115,26 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               ),
             ),
+          // 🔁 리트라이 버튼 (감정 다 했을 때)
+          if (candleCount == 0 && !isLoading)
+            Positioned(
+              bottom: 50,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GlowingButton(
+                  imagePath: 'assets/retry.png',
+                  width: 180,
+                  onTap: _retrySession,
+                ),
+              ),
+            ),
 
-          // 로딩 중
+          // ⏳ 로딩 이미지
           if (isLoading)
             Center(child: Image.asset('assets/loading.png', width: 150)),
 
-          // 세츠나 캐릭터 + 대사창
+          // 🧍‍♀️ 세츠나 캐릭터
           Positioned(
             bottom: 120,
             left: 20,
@@ -105,14 +144,18 @@ class _ResultScreenState extends State<ResultScreen> {
               height: 100,
             ),
           ),
+
+          // 💬 대사창
           DialogueBox(text: dialogue),
 
-          // 촛불
+          // 🕯️ 촛불 위젯 (하나만 남기기)
           Positioned(
             top: 40,
             right: 20,
             child: CandleWidget(remaining: candleCount, total: 3),
-          ), // ← 이 괄호가 누락되어 있었음!
+          ),
+
+          // 🩸 노로 효과 (한 번만)
           if (showNoro)
             Positioned.fill(
               child: Opacity(

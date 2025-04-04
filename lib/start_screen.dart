@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'result_screen.dart';
+import 'custom_button.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
@@ -11,43 +12,33 @@ class StartScreen extends StatelessWidget {
         children: [
           // 배경 이미지
           Positioned.fill(
-            child: Image.asset(
-              'assets/1.png',
-              fit: BoxFit.cover, // 꽉 차게
-            ),
+            child: Image.asset('assets/1.png', fit: BoxFit.cover),
           ),
 
-          // 로고
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.15,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Image.asset(
-                'assets/logo.png',
-                width: MediaQuery.of(context).size.width * 0.6,
-              ),
-            ),
-          ),
-
-          // START 버튼
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.1,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ResultScreen()),
-                  );
-                },
-                child: Image.asset(
-                  'assets/buttonon.png',
-                  width: MediaQuery.of(context).size.width * 0.4,
+          // 메인 콘텐츠 (로고 + 버튼)
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 로고
+                Image.asset(
+                  'assets/logo.png',
+                  width: MediaQuery.of(context).size.width * 0.6,
                 ),
-              ),
+                SizedBox(height: 40),
+
+                // START 버튼 (새 커스텀)
+                GlowingButton(
+                  imagePath: 'assets/start.png',
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ResultScreen()),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],
