@@ -1,68 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
 import 'waku_screen.dart';
 
 class ResultScreen extends StatefulWidget {
-  final String? imagePath;
-
-  ResultScreen({this.imagePath});
+  const ResultScreen({super.key});
 
   @override
-  _ResultScreenState createState() => _ResultScreenState();
+  State<ResultScreen> createState() => _ResultScreenState();
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  int candleCount = 3;
+  String dialogue = "ここに感情の結果が表示されます。";
+  int setunaExpression = 0; // 0 = 기본, 1~4 = 표정
   bool isLoading = false;
   bool showNoro = false;
-  int candleCount = 3;
-  String dialogue = "セツナです。鑑定を始めてください。";
-  int setunaExpression = 0;
-  String? selectedImage;
+  String? imagePath;
+
+  Future<void> onPickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        imagePath = pickedFile.path;
+        isLoading = true;
+        setunaExpression = 0; // 로딩 중엔 디폴트 표정
+      });
+
+      await Future.delayed(const Duration(seconds: 3)); // 감정 처리 시뮬레이션
+
+      setState(() {
+        isLoading = false;
+        setunaExpression = (candleCount % 4) + 1; // 1~4 표정
+        dialogue = _getDialogue(setunaExpression);
+        candleCount = (candleCount - 1).clamp(0, 3);
+      });
+    }
+  }
 
   void _retrySession() {
     setState(() {
-      candleCount = 1; // 광고 보고 한 개 회복
-      dialogue = "もう一度鑑定してみましょう。";
+      candleCount = 1;
+      imagePath = null;
       isLoading = false;
-      showNoro = false;
       setunaExpression = 0;
+      dialogue = "もう一度感じてみましょう。";
     });
   }
 
-  void _startLoadingAndEmotion() async {
-    if (candleCount <= 0) return;
-
-    setState(() {
-      isLoading = true;
-      showNoro = false;
-      dialogue = "鑑定中……";
-    });
-
-    await Future.delayed(const Duration(seconds: 3));
-
-    setState(() {
-      isLoading = false;
-      candleCount--;
-      showNoro = (candleCount == 1);
-      dialogue =
-          candleCount == 2
-              ? "これはただの古いトンネルですね。"
-              : candleCount == 1
-              ? "……何か感じました。ここは危ないかも。"
-              : "これ以上鑑定できません。広告をご覧ください。";
-      setunaExpression = 3 - candleCount;
-    });
-  }
-
-  void _pickImage() {
-    print("이미지 선택 기능은 아직 구현되지 않았습니다.");
-  }
-
-  void _dismissNoro() {
-    setState(() {
-      showNoro = false;
-      dialogue = "……いまは大丈夫です。さっきの気配はもう消えました。";
-      setunaExpression = 3;
-    });
+  String _getDialogue(int expression) {
+    switch (expression) {
+      case 1:
+        return "うーん、ちょっと怖いかも？";
+      case 2:
+        return "背筋がゾッとしますね…";
+      case 3:
+        return "これは危ない場所かも…";
+      case 4:
+        return "……ッ！ ここはやめましょう！";
+      default:
+        return "ここに感情の結果が表示されます。";
+    }
   }
 
   @override
@@ -74,11 +75,11 @@ class _ResultScreenState extends State<ResultScreen> {
         setunaExpression: setunaExpression,
         isLoading: isLoading,
         showNoro: showNoro,
-        imagePath: selectedImage,
-        onEmotionTap: _startLoadingAndEmotion,
+        imagePath: imagePath,
+        onEmotionTap: () {}, // 현재 사용 안함
         onRetryTap: _retrySession,
-        onPickImage: _pickImage,
-        onDismissNoro: _dismissNoro,
+        onPickImage: onPickImage,
+        onDismissNoro: () => setState(() => showNoro = false),
       ),
     );
   }

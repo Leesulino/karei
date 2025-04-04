@@ -38,16 +38,18 @@ class _GlowingButtonState extends State<GlowingButton> {
         height: widget.height,
         child: Stack(
           children: [
-            Image.asset(
-              widget.imagePath,
-              fit: BoxFit.contain,
+            SizedBox(
               width: widget.width,
               height: widget.height,
-              color: _isPressed ? Colors.white.withOpacity(0.7) : null,
-              colorBlendMode: BlendMode.screen,
+              child: Image.asset(
+                widget.imagePath,
+                fit: BoxFit.fill, // 강제 크기 맞춤
+              ),
             ),
             if (_isPressed)
               Container(
+                width: widget.width,
+                height: widget.height,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(

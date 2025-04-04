@@ -10,7 +10,7 @@ dev_dependencies:
 dependencies:
   flutter:
     sdk: flutter
-  image_picker: ^1.0.4
+  image_picker: ^1.1.2
   audioplayers: ^5.2.1
   intl: ^0.18.1
 
@@ -21,6 +21,13 @@ flutter:
     - assets/buttonoff.png
     - assets/buttonon.png
     - assets/candlescope.png
+    - assets/scope.png
+    - assets/setuna_var_aligned_1.png
+    - assets/setuna_var_aligned_2.png
+    - assets/setuna_var_aligned_3.png
+    - assets/setuna_var_aligned_4.png
+    - assets/candle.png
+    - assets/kansei_grey.png
     - assets/loading.png
     - assets/loading_red.png
     - assets/logo.png
