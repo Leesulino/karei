@@ -1,0 +1,29 @@
+{
+  "tunnel": {
+    "level": "high",
+    "template": {
+      "en": "This place looks like a haunted tunnel. Disturbance level is {level}%.",
+      "ja": "ここは心霊トンネルのようです。干渉度は{level}％です。",
+      "ko": "이곳은 심령 터널처럼 보입니다. 간섭도는 {level}%입니다。",
+      "zh": "這裡看起來像是一個鬧鬼的隧道。干擾度為{level}%。"
+    }
+  },
+  "abandoned_hospital": {
+    "level": "extreme",
+    "template": {
+      "en": "An abandoned hospital... The presence here is overwhelming. Disturbance level is {level}%.",
+      "ja": "廃病院……ここは非常に危険な気配を感じます。干渉度は{level}％です。",
+      "ko": "폐병원... 이곳은 위험한 기운이 감돌고 있습니다. 간섭도는 {level}%입니다。",
+      "zh": "廢棄的醫院……這裡的氣息非常危險。干擾度為{level}%。"
+    }
+  },
+  "school": {
+    "level": "medium",
+    "template": {
+      "en": "Something lingers in schools... Disturbance level is {level}%.",
+      "ja": "学校には何かが残っていることがあります。干渉度は{level}％です。",
+      "ko": "학교에는 무언가가 남아 있는 경우가 많죠. 간섭도는 {level}%입니다。",
+      "zh": "學校裡經常會殘留些什麼……干擾度為{level}%。"
+    }
+  }
+}

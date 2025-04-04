@@ -45,7 +45,7 @@ class _WakuScreenState extends State<WakuScreen> {
           height: double.infinity,
         ),
 
-        // 촛불
+        // 🔥 촛불
         Positioned(
           top: 20,
           right: 20,
@@ -87,61 +87,72 @@ class _WakuScreenState extends State<WakuScreen> {
           ),
         ),
 
-        // 와꾸 + 칸세이 버튼
+        // 🧱 와꾸 + 내부 UI
         Center(
           child: Stack(
             alignment: Alignment.center,
             children: [
               Image.asset('assets/waku.png', width: 360),
 
-              // 감정 버튼 (클릭 가능)
-              if (!widget.isLoading)
+              // 🔮 감정 버튼
+              if (!widget.isLoading && widget.candleCount > 0)
                 Positioned(
-                  top: 24,
+                  top: -130,
                   child: GestureDetector(
                     onTap: () {
                       widget.onPickImage();
                       setState(() => firstTimeGuide = false);
                     },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Image.asset(
-                          widget.candleCount > 0
-                              ? 'assets/kansei.png'
-                              : 'assets/kansei_grey.png',
-                          width: 180,
-                        ),
-                        if (widget.candleCount > 0 && firstTimeGuide)
-                          TweenAnimationBuilder<double>(
-                            tween: Tween(begin: 0.3, end: 0.9),
-                            duration: const Duration(milliseconds: 1000),
-                            curve: Curves.easeInOut,
-                            builder: (context, value, child) {
-                              return Transform.rotate(
-                                angle: -0.2,
-                                child: Opacity(
-                                  opacity: value,
-                                  child: Image.asset(
-                                    'assets/scope.png',
-                                    width: 72,
-                                  ),
-                                ),
-                              );
-                            },
-                            onEnd: () => setState(() => firstTimeGuide = false),
-                          ),
-                      ],
+                    child: Image.asset(
+                      widget.candleCount > 0
+                          ? 'assets/kansei.png'
+                          : 'assets/kansei_grey.png',
+                      width: 180,
                     ),
                   ),
+                ),
+
+              // 👻 스코프 깜빡이기 (첫 실행 시)
+              if (widget.candleCount > 0 && firstTimeGuide)
+                Positioned(
+                  bottom: 10,
+                  right: 25,
+                  child: GestureDetector(
+                    onTap: () {
+                      widget.onPickImage();
+                      setState(() => firstTimeGuide = false);
+                    },
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.2, end: 0.8),
+                      duration: const Duration(milliseconds: 800),
+                      curve: Curves.easeInOut,
+                      builder: (context, value, child) {
+                        return Transform.rotate(
+                          angle: -0.3,
+                          child: Opacity(
+                            opacity: value,
+                            child: Image.asset('assets/scope.png', width: 64),
+                          ),
+                        );
+                      },
+                      onEnd: () => setState(() {}),
+                    ),
+                  ),
+                ),
+
+              // ♻️ RETRY 버튼
+              if (!widget.isLoading && widget.candleCount == 0)
+                GestureDetector(
+                  onTap: widget.onRetryTap,
+                  child: Image.asset('assets/retry.png', width: 240),
                 ),
             ],
           ),
         ),
 
-        // 세츠나 (왼쪽 하단)
+        // 👧 세츠나
         Positioned(
-          bottom: 90,
+          bottom: 80,
           left: 20,
           child: Stack(
             children: [
@@ -164,48 +175,36 @@ class _WakuScreenState extends State<WakuScreen> {
           ),
         ),
 
-        // 대사창 (buttonoff)
+        // 🗨 대사창
         Positioned(
-          bottom: 10,
-          left: 120,
+          bottom: 0,
+          left: 110,
           child: Stack(
-            alignment: Alignment.center,
+            alignment: Alignment.centerLeft,
             children: [
               Image.asset('assets/buttonoff.png', width: 260),
-              SizedBox(
-                width: 220,
-                child: Text(
-                  widget.dialogue,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontFamily: 'DotGothic16',
+              Padding(
+                padding: const EdgeInsets.only(left: 12, right: 8),
+                child: SizedBox(
+                  width: 240,
+                  child: Text(
+                    widget.candleCount == 0
+                        ? 'これ以上鑑定できません。広告をご覧ください。'
+                        : widget.dialogue,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontFamily: 'DotGothic16',
+                    ),
+                    softWrap: true,
                   ),
-                  textAlign: TextAlign.left,
-                  softWrap: true,
                 ),
               ),
             ],
           ),
         ),
 
-        // 리트라이 버튼
-        if (!widget.isLoading && widget.candleCount == 0)
-          Positioned(
-            bottom: 80,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: GlowingButton(
-                imagePath: 'assets/retry.png',
-                width: 200,
-                height: 80,
-                onTap: widget.onRetryTap,
-              ),
-            ),
-          ),
-
-        // 로딩 애니
+        // 🔄 로딩 애니메이션
         if (widget.isLoading)
           Center(
             child: SizedBox(
@@ -236,7 +235,7 @@ class _WakuScreenState extends State<WakuScreen> {
             ),
           ),
 
-        // 노로 발동
+        // 💀 노로
         if (widget.showNoro)
           Positioned.fill(
             child: GestureDetector(

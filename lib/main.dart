@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'start_screen.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
-    runApp(const KaireidoScopeApp());
-  });
+  MobileAds.instance.initialize();
+  runApp(const KaireidoScopeApp());
 }
 
 class KaireidoScopeApp extends StatefulWidget {
