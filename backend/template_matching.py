@@ -1,7 +1,7 @@
 import json
 
 # Load keyword-template mapping
-with open("template_templates_en.json", "r", encoding="utf-8") as f:
+with open("templates/en.json", "r", encoding="utf-8") as f:
     templates = json.load(f)
 
 def match_keywords_to_template(keywords, lang="en"):
